@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id                      Int                       @id @default(autoincrement())
+  nom                     String
+  prenom                  String
+  email                   String
+  password                String
+  description             String
+  pdpId                   Int
+  statu_user_role         Statu_user_role[]
+  statu_user_notification Statu_user_notification[]
+  user_image_evenement    UserImageEvenement[]
+  Image                   Image    @relation(fields: [pdpId], references: [id])
+  
+
+}
+
+model Role {
+  id              Int               @id @default(autoincrement())
+  nom             String
+  statu_user_role Statu_user_role[]
+}
+
+model Statu {
+  st_id                      Int                          @id @default(autoincrement())
+  st_libelle                 String
+  role                       Statu_user_role[]
+  statu_message_conversation Statu_message_conversation[]
+  statu_user_notification    Statu_user_notification[]
+}
+
+model Statu_user_role {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  roleId  Int
+  statuId Int
+  date    DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id])
+  Role    Role     @relation(fields: [roleId], references: [id])
+  Statu   Statu    @relation(fields: [statuId], references: [st_id])
+}
+
+
+
+model Conversation {
+  id                         Int                          @id @default(autoincrement())
+  membre                     Int[]
+  statu_message_conversation Statu_message_conversation[]
+}
+
+
+
+model Message {
+  id                         Int                          @id @default(autoincrement())
+  senderId                   Int
+  message                    String
+  statu_message_conversation Statu_message_conversation[]
+}
+
+model Statu_message_conversation {
+  id             Int          @id @default(autoincrement())
+  statuId        Int
+  messageId      Int
+  conversationId Int
+  date           DateTime     @default(now())
+  Statu          Statu        @relation(fields: [statuId], references: [st_id])
+  Message        Message      @relation(fields: [messageId], references: [id])
+  Conversation   Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model Notification {
+  id                      Int                       @id @default(autoincrement())
+  contenu                 String
+  statu_user_notification Statu_user_notification[]
+}
+
+model Statu_user_notification {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  notificationId Int
+  statuId        Int
+  date           DateTime     @default(now())
+  User           User         @relation(fields: [userId], references: [id])
+  Notification   Notification @relation(fields: [notificationId], references: [id])
+  Statu          Statu        @relation(fields: [statuId], references: [st_id])
+}
+
+
+
+
+
+
+
+
+model Image {
+    id         Int      @id @default(autoincrement())
+    nom        String 
+    user_image_evenement UserImageEvenement[]
+    user        User[]
+
+
+}
+
+
+model Evenemement {
+  id           Int      @id @default(autoincrement())
+  nom          String
+  user_image_evenement UserImageEvenement[]
+}
+
+model UserImageEvenement {
+    id                Int      @id @default(autoincrement())
+    userId            Int
+    imageId           Int
+    evenementId       Int
+    date              DateTime @default(now())
+    image             Image @relation(fields: [imageId], references: [id])
+    user              User @relation(fields: [userId], references: [id])
+    evenement         Evenemement @relation(fields: [evenementId], references: [id])
+
+}
