@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 app.get('/', async (req, res, next) => {
-  res.send({ message: 'Backend Du projet Site Flm Tsarahonenana' });
+  res.send({ message: 'Backend du projet : Site Flm Tsarahonenana' });
 });
 
 app.use('/api', require('./routes/api.route'));
